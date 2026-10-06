@@ -28,5 +28,8 @@ jobs:
       - name: 🔨 Build Shared Packages
         run: npm run build:packages
 
+      - name: 🔍 TypeScript Type Check
+        run: npm run typecheck
+
       - name: 🧪 Execute Unit Test Suite
         run: npm run test:unit

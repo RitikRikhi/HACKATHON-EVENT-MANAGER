@@ -11,14 +11,8 @@
     "resolveJsonModule": true,
     "declaration": true,
     "sourceMap": true,
-    "removeComments": true,
-    "noEmit": true
+    "removeComments": true
   },
-  "include": [
-    "packages/*/src/**/*",
-    "services/*/src/**/*",
-    "scripts/**/*"
-  ],
   "exclude": [
     "node_modules",
     "**/dist/**"

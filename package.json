@@ -1,0 +1,56 @@
+{
+  "name": "event-os",
+  "version": "1.0.0",
+  "description": "Event OS - Microservices Backend for Event Management System",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "services/*"
+  ],
+  "scripts": {
+    "build": "npm run build:packages && npm run build:services",
+    "build:packages": "npm run build --workspace=@event-os/types --workspace=@event-os/config",
+    "build:services": "npm run build --workspace=@event-os/api-gateway --workspace=@event-os/auth-service --workspace=@event-os/event-service --workspace=@event-os/team-service --workspace=@event-os/ticket-service --workspace=@event-os/checkin-service --workspace=@event-os/announcement-service --workspace=@event-os/notification-service",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "npm run typecheck && npm run lint && npm run test:unit",
+    "test:unit": "tsx scripts/test-unit.ts",
+    "test:e2e": "tsx scripts/e2e-test.ts",
+    "dev": "concurrently -n \"GATEWAY,AUTH,EVENT,TEAM,TICKET,CHECKIN,ANNOUNCE,NOTIFY\" -c \"magenta,blue,green,yellow,cyan,red,white,gray\" \"npm run dev --workspace=@event-os/api-gateway\" \"npm run dev --workspace=@event-os/auth-service\" \"npm run dev --workspace=@event-os/event-service\" \"npm run dev --workspace=@event-os/team-service\" \"npm run dev --workspace=@event-os/ticket-service\" \"npm run dev --workspace=@event-os/checkin-service\" \"npm run dev --workspace=@event-os/announcement-service\" \"npm run dev --workspace=@event-os/notification-service\"",
+    "start:gateway": "npm run start --workspace=@event-os/api-gateway",
+    "start:auth": "npm run start --workspace=@event-os/auth-service",
+    "start:event": "npm run start --workspace=@event-os/event-service",
+    "start:team": "npm run start --workspace=@event-os/team-service",
+    "start:ticket": "npm run start --workspace=@event-os/ticket-service",
+    "start:checkin": "npm run start --workspace=@event-os/checkin-service",
+    "start:announcement": "npm run start --workspace=@event-os/announcement-service",
+    "start:notification": "npm run start --workspace=@event-os/notification-service",
+    "docker:up": "docker-compose up --build",
+    "docker:down": "docker-compose down",
+    "format": "prettier --write \"**/*.{ts,json,md}\""
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@typescript-eslint/eslint-plugin": "^8.18.1",
+    "@typescript-eslint/parser": "^8.18.1",
+    "concurrently": "^9.1.0",
+    "eslint": "^9.17.0",
+    "prettier": "^3.4.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  },
+  "keywords": [
+    "microservices",
+    "event-management",
+    "supabase",
+    "typescript",
+    "express"
+  ],
+  "author": "Event OS Team",
+  "license": "MIT",
+  "dependencies": {
+    "@types/pg": "^8.23.1",
+    "pg": "^8.23.1"
+  }
+}

@@ -1,0 +1,343 @@
+{
+  "info": {
+    "name": "Event OS API Collection",
+    "description": "Comprehensive Postman test collection for the Event OS Microservices Backend.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Auth",
+      "item": [
+        {
+          "name": "Register Participant",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 201 Created', function() { pm.response.to.have.status(201); });",
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data.token) { pm.environment.set('participant_token', res.data.token); pm.environment.set('auth_token', res.data.token); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Alice Participant\",\n  \"email\": \"alice_{{$timestamp}}@eventos.test\",\n  \"password\": \"Password123!\",\n  \"role\": \"PARTICIPANT\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/auth/register", "host": ["{{base_url}}"], "path": ["api", "auth", "register"] }
+          }
+        },
+        {
+          "name": "Register Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 201 Created', function() { pm.response.to.have.status(201); });",
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data.token) { pm.environment.set('admin_token', res.data.token); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Lead Organizer\",\n  \"email\": \"admin_{{$timestamp}}@eventos.test\",\n  \"password\": \"AdminPassword123!\",\n  \"role\": \"ADMIN\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/auth/register", "host": ["{{base_url}}"], "path": ["api", "auth", "register"] }
+          }
+        },
+        {
+          "name": "Get Authenticated User Profile (GET /me)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{auth_token}}" }],
+            "url": { "raw": "{{base_url}}/api/auth/me", "host": ["{{base_url}}"], "path": ["api", "auth", "me"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Events",
+      "item": [
+        {
+          "name": "Create Event",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 201 Created', function() { pm.response.to.have.status(201); });",
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data.id) { pm.environment.set('eventId', res.data.id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Global Hackathon 2026\",\n  \"venue\": \"Innovation Hall, San Francisco\",\n  \"startDate\": \"2026-11-01T09:00:00.000Z\",\n  \"endDate\": \"2026-11-03T18:00:00.000Z\",\n  \"capacity\": 300,\n  \"eventType\": \"HACKATHON\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/events", "host": ["{{base_url}}"], "path": ["api", "events"] }
+          }
+        },
+        {
+          "name": "List Events",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/events", "host": ["{{base_url}}"], "path": ["api", "events"] }
+          }
+        },
+        {
+          "name": "Publish Event",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": { "raw": "{{base_url}}/api/events/{{eventId}}/publish", "host": ["{{base_url}}"], "path": ["api", "events", "{{eventId}}", "publish"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Registration & LFT",
+      "item": [
+        {
+          "name": "Register for Event",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{participant_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"college\": \"Stanford University\",\n  \"skills\": [\"React\", \"TypeScript\", \"AI\"],\n  \"consent\": true,\n  \"lookingForTeam\": true\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/events/{{eventId}}/register", "host": ["{{base_url}}"], "path": ["api", "events", "{{eventId}}", "register"] }
+          }
+        },
+        {
+          "name": "View Looking For Team Pool",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/events/{{eventId}}/looking-for-team", "host": ["{{base_url}}"], "path": ["api", "events", "{{eventId}}", "looking-for-team"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Teams",
+      "item": [
+        {
+          "name": "Create Team",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 201 Created', function() { pm.response.to.have.status(201); });",
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data.id) { pm.environment.set('teamId', res.data.id); pm.environment.set('team_code', res.data.team_code); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{participant_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Quantum Coders\",\n  \"description\": \"Building AI agent pipelines\",\n  \"eventId\": \"{{eventId}}\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/teams", "host": ["{{base_url}}"], "path": ["api", "teams"] }
+          }
+        },
+        {
+          "name": "Join Team via Code",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{participant_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"teamCode\": \"{{team_code}}\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/teams/join", "host": ["{{base_url}}"], "path": ["api", "teams", "join"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Tickets & Check-in",
+      "item": [
+        {
+          "name": "Generate Ticket",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 201 Created', function() { pm.response.to.have.status(201); });",
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data.id) { pm.environment.set('ticketId', res.data.id); pm.environment.set('qr_data', res.data.qr_data); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{participant_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"eventId\": \"{{eventId}}\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/tickets", "host": ["{{base_url}}"], "path": ["api", "tickets"] }
+          }
+        },
+        {
+          "name": "Scan QR Check-in",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"qrString\": \"{{qr_data}}\",\n  \"eventId\": \"{{eventId}}\",\n  \"type\": \"CHECKIN\",\n  \"idempotencyKey\": \"scan_{{$timestamp}}\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/checkin/scan", "host": ["{{base_url}}"], "path": ["api", "checkin", "scan"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Helpdesk & Support",
+      "item": [
+        {
+          "name": "Create Helpdesk Ticket",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{participant_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category\": \"TECHNICAL\",\n  \"description\": \"Power strip at our desk is not supplying power.\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/helpdesk", "host": ["{{base_url}}"], "path": ["api", "helpdesk"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Announcements & Community",
+      "item": [
+        {
+          "name": "Broadcast Announcement",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Lunch Served in Hall B\",\n  \"content\": \"Lunch is now available for all registered participants.\",\n  \"priority\": \"HIGH\",\n  \"pinned\": true,\n  \"eventId\": \"{{eventId}}\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/announcements", "host": ["{{base_url}}"], "path": ["api", "announcements"] }
+          }
+        },
+        {
+          "name": "Post Chat Message",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{participant_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"channel\": \"general\",\n  \"body\": \"Excited to be here at the hackathon!\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/chat/messages", "host": ["{{base_url}}"], "path": ["api", "chat", "messages"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. Submissions & Results",
+      "item": [
+        {
+          "name": "Submit Project",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{participant_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"repoUrl\": \"https://github.com/quantum-coders/qml-pipeline\",\n  \"demoUrl\": \"https://qml-demo.vercel.app\",\n  \"description\": \"Quantum machine learning pipeline for drug discovery\",\n  \"lock\": true\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/submissions", "host": ["{{base_url}}"], "path": ["api", "submissions"] }
+          }
+        },
+        {
+          "name": "Submit Judging Score",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"teamId\": \"{{teamId}}\",\n  \"criteria\": {\n    \"technicalComplexity\": 35,\n    \"innovation\": 30,\n    \"uiUx\": 25\n  },\n  \"feedback\": \"Outstanding implementation!\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/results/scores", "host": ["{{base_url}}"], "path": ["api", "results", "scores"] }
+          }
+        },
+        {
+          "name": "Publish Results",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"PUBLISHED\",\n  \"payload\": {\n    \"winners\": [\n      { \"rank\": 1, \"teamName\": \"Quantum Coders\", \"prize\": \"$5,000\" }\n    ]\n  }\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/results/publish", "host": ["{{base_url}}"], "path": ["api", "results", "publish"] }
+          }
+        }
+      ]
+    }
+  ]
+}
